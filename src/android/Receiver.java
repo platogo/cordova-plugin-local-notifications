@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 appPlant UG
+    Copyright 2013-2014 appPlant UG
 
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
@@ -28,7 +28,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.Notification.Builder;
 import android.app.NotificationManager;
@@ -38,9 +37,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -74,19 +73,17 @@ public class Receiver extends BroadcastReceiver {
         // The context may got lost if the app was not running before
         LocalNotification.setContext(context);
 
+        fireTriggerEvent();
+
         if (options.getInterval() == 0) {
             LocalNotification.unpersist(options.getId());
         } else if (isFirstAlarmInFuture()) {
             return;
         } else {
-            LocalNotification.add(options.moveDate());
+            LocalNotification.add(options.moveDate(), false);
         }
 
         Builder notification = buildNotification();
-
-        if (!isInBackground(context)) {
-            invokeForegroundCallback();
-        }
 
         showNotification(notification);
     }
@@ -117,20 +114,32 @@ public class Receiver extends BroadcastReceiver {
     }
 
     /**
-     * Erstellt die Notification.
+     * Creates the notification.
      */
-    private Builder buildNotification () {
+    @SuppressLint("NewApi")
+	private Builder buildNotification () {
         Bitmap icon = BitmapFactory.decodeResource(context.getResources(), options.getIcon());
+        Uri sound   = options.getSound();
 
         Builder notification = new Notification.Builder(context)
-        .setContentTitle(options.getTitle())
-        .setContentText(options.getMessage())
-        .setNumber(options.getBadge())
-        .setTicker(options.getTitle())
-        .setSmallIcon(options.getSmallIcon())
-        .setLargeIcon(icon)
-        .setSound(options.getSound())
-        .setAutoCancel(options.getAutoCancel());
+            .setDefaults(0) // Do not inherit any defaults
+	        .setContentTitle(options.getTitle())
+	        .setContentText(options.getMessage())
+	        .setNumber(options.getBadge())
+	        .setTicker(options.getMessage())
+	        .setSmallIcon(options.getSmallIcon())
+	        .setLargeIcon(icon)
+	        .setAutoCancel(options.getAutoCancel())
+	        .setOngoing(options.getOngoing());
+
+        if (sound != null) {
+        	notification.setSound(sound);
+        }
+
+        if (Build.VERSION.SDK_INT > 16) {
+        	notification.setStyle(new Notification.BigTextStyle()
+        		.bigText(options.getMessage()));
+        }
 
         setClickEvent(notification);
 
@@ -138,7 +147,7 @@ public class Receiver extends BroadcastReceiver {
     }
 
     /**
-     * Fügt der Notification einen onclick Handler hinzu.
+     * Adds an onclick handler to the notification
      */
     private Builder setClickEvent (Builder notification) {
         Intent intent = new Intent(context, ReceiverActivity.class)
@@ -153,7 +162,7 @@ public class Receiver extends BroadcastReceiver {
     }
 
     /**
-     * Zeigt die Notification an.
+     * Shows the notification
      */
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
@@ -175,25 +184,9 @@ public class Receiver extends BroadcastReceiver {
     }
 
     /**
-     * Gibt an, ob die App im Hintergrund läuft.
+     * Fires ontrigger event.
      */
-    private boolean isInBackground (Context context) {
-        return !context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName());
-    }
-
-    /**
-     * Ruft die `foreground` Callback Funktion auf.
-     */
-    private void invokeForegroundCallback () {
-        String function = options.getForeground();
-
-        // after reboot, LocalNotification.webView is always null
-        // may be call foreground callback later
-        if (!TextUtils.isEmpty(function) && LocalNotification.webView != null) {
-            String params = "\"" + options.getId() + "\",\\'" + JSONObject.quote(options.getJSON()) + "\\'.replace(/(^\"|\"$)/g, \\'\\')";
-            String js     = "setTimeout('" + function + "(" + params + ")',0)";
-
-            LocalNotification.webView.sendJavascript(js);
-        }
+    private void fireTriggerEvent () {
+        LocalNotification.fireEvent("trigger", options.getId(), options.getJSON());
     }
 }

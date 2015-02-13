@@ -1,5 +1,5 @@
 /*
- Copyright 2013 appPlant UG
+ Copyright 2013-2014 appPlant UG
 
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -22,18 +22,25 @@
 #import <Foundation/Foundation.h>
 #import <Cordova/CDVPlugin.h>
 
-@interface APPLocalNotification : CDVPlugin {
+@interface APPLocalNotification : CDVPlugin
 
-}
-
-// Schlüssel-Präfix für alle archivierten Meldungen
-extern NSString *const kAPP_LOCALNOTIFICATION;
-
-// Fügt einen neuen Eintrag hinzu
+// Executes all queued events
+- (void) deviceready:(CDVInvokedUrlCommand*)command;
+// Schedules a new local notification
 - (void) add:(CDVInvokedUrlCommand*)command;
-// Entfernt die zur ID passende Meldung
+// Cancels a given local notification
 - (void) cancel:(CDVInvokedUrlCommand*)command;
-// Entfernt alle registrierten Einträge
+// Cancels all currently scheduled notifications
 - (void) cancelAll:(CDVInvokedUrlCommand*)command;
+// Checks wether a notification with an ID is scheduled
+- (void) isScheduled:(CDVInvokedUrlCommand*)command;
+// Retrieves a list of ids from all currently pending notifications
+- (void) getScheduledIds:(CDVInvokedUrlCommand*)command;
+// Informs if the app has the permission to show notifications
+- (void) hasPermission:(CDVInvokedUrlCommand *)command;
+// Ask for permission to show notifications
+- (void) promptForPermission:(CDVInvokedUrlCommand *)command;
+// Informs which permissions the user has granted
+- (void) didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
 
 @end

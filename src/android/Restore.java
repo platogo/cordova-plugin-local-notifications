@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 appPlant UG
+    Copyright 2013-2014 appPlant UG
 
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
@@ -59,7 +59,7 @@ public class Restore extends BroadcastReceiver {
                 /*
                  * If the trigger date was in the past, the notification will be displayed immediately.
                  */
-                LocalNotification.add(options);
+                LocalNotification.add(options, false);
 
             } catch (JSONException e) {}
         }
