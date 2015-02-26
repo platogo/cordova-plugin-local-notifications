@@ -676,4 +676,12 @@
     }
 }
 
+- (void) setBadgeNumber:(CDVInvokedUrlCommand*)command
+{
+    NSArray* arguments = [command arguments];
+    NSInteger badgeNumber = [[arguments objectAtIndex:0] intValue];
+
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber];
+}
+
 @end

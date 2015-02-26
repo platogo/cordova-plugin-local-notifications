@@ -193,6 +193,11 @@ LocalNotification.prototype = {
         cordova.exec(callback, null, 'LocalNotification', 'promptForPermission', []);
     },
 
+
+    setBadgeNumber: function(callback, badgeNumber) {
+        cordova.exec(callback, null, 'LocalNotification', 'setBadgeNumber', [badgeNumber]);
+    },
+
     /**
      * Occurs when a notification was added.
      *
