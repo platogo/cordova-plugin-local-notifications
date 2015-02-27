@@ -42,6 +42,6 @@
 - (void) promptForPermission:(CDVInvokedUrlCommand *)command;
 // Informs which permissions the user has granted
 - (void) didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
-// Reset badge number
+// Set badge number
 - (void) setBadgeNumber:(CDVInvokedUrlCommand*)command;
 @end
