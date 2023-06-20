@@ -41,42 +41,42 @@ import de.appplant.cordova.plugin.notification.receiver.AbstractRestoreReceiver;
  */
 public class RestoreReceiver extends AbstractRestoreReceiver {
 
-  /**
-   * Called when a local notification need to be restored.
-   *
-   * @param request Set of notification options.
-   * @param toast   Wrapper around the local notification.
-   */
-  @Override
-  public void onRestore(Request request, Notification toast) {
-    Date date = request.getTriggerDate();
-    boolean after = date != null && date.after(new Date());
+    /**
+     * Called when a local notification need to be restored.
+     *
+     * @param request Set of notification options.
+     * @param toast   Wrapper around the local notification.
+     */
+    @Override
+    public void onRestore (Request request, Notification toast) {
+        Date date     = request.getTriggerDate();
+        boolean after = date != null && date.after(new Date());
 
-    if (!after && toast.isHighPrio()) {
-      toast.show();
-    } else {
-      toast.clear();
+        if (!after && toast.isHighPrio()) {
+            toast.show();
+        } else {
+            toast.clear();
+        }
+
+        Context ctx = toast.getContext();
+        Manager mgr = Manager.getInstance(ctx);
+
+        if (after || toast.isRepeating()) {
+            mgr.schedule(request, TriggerReceiver.class);
+        }
     }
 
-    Context ctx = toast.getContext();
-    Manager mgr = Manager.getInstance(ctx);
-
-    if (after || toast.isRepeating()) {
-      mgr.schedule(request, TriggerReceiver.class);
+    /**
+     * Build notification specified by options.
+     *
+     * @param builder Notification builder.
+     */
+    @Override
+    public Notification buildNotification (Builder builder) {
+        return builder
+                .setClickActivity(ClickHandlerActivity.class)
+                .setClearReceiver(ClearReceiver.class)
+                .build();
     }
-  }
-
-  /**
-   * Build notification specified by options.
-   *
-   * @param builder Notification builder.
-   */
-  @Override
-  public Notification buildNotification(Builder builder) {
-    return builder
-        .setClickActivity(ClickReceiver.class)
-        .setClearReceiver(ClearReceiver.class)
-        .build();
-  }
 
 }
