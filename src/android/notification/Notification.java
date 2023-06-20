@@ -216,7 +216,6 @@ public final class Notification {
             return;
         }
 
-        boolean hasAlarmPermission = checkAlarmPermission();
         persist(ids);
 
         if (!options.isInfiniteTrigger()) {
@@ -232,9 +231,6 @@ public final class Notification {
             if (!date.after(new Date()) && trigger(intent, receiver))
                 continue;
 
-            if (!hasAlarmPermission)
-                continue; // Cannot schedule the alarm.
-
             PendingIntent pi = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                     pi = PendingIntent.getBroadcast(
@@ -247,17 +243,17 @@ public final class Notification {
             try {
                 switch (options.getPrio()) {
                     case PRIORITY_MIN:
-                        mgr.setExact(RTC, time, pi);
+                        mgr.set(RTC, time, pi);
                         break;
                     case PRIORITY_MAX:
                         if (SDK_INT >= M) {
-                            mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
+                            mgr.setAndAllowWhileIdle(RTC_WAKEUP, time, pi);
                         } else {
-                            mgr.setExact(RTC, time, pi);
+                            mgr.set(RTC, time, pi);
                         }
                         break;
                     default:
-                        mgr.setExact(RTC_WAKEUP, time, pi);
+                        mgr.set(RTC_WAKEUP, time, pi);
                         break;
                     }
                 } catch (Exception ignore) {
