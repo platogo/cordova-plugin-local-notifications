@@ -6,15 +6,14 @@ This is a fork of `cordova-plugin-local-notification` by [Moodle HQ](https://moo
 
 We created this fork because we needed to include the following modifications in [our mobile application](https://github.com/moodlehq/moodleapp):
 
-| PR | Description |
-| -- | ----------- |
+| PR                                                                              | Description                                       |
+| ------------------------------------------------------------------------------- | ------------------------------------------------- |
 | [#1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781) | Reuse existing messages when using MessagingStyle |
-| [#1853](https://github.com/katzer/cordova-plugin-local-notifications/pull/1853) | Use correct authority name |
-| - | Support Android X |
-| - | Support sender image |
-| - | Fix crash with target SDK 31 |
-| - | Declare SCHEDULE_EXACT_ALARM permission |
-| - | Fix click notifications in Android 12 |
+| [#1853](https://github.com/katzer/cordova-plugin-local-notifications/pull/1853) | Use correct authority name                        |
+| -                                                                               | Support Android X                                 |
+| -                                                                               | Support sender image                              |
+| -                                                                               | Fix crash with target SDK 31                      |
+| -                                                                               | Fix click notifications in Android 12             |
 
 It also includes some commits that are in master and haven't been released.
 
